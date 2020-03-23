@@ -1,0 +1,36 @@
+.container {
+  word-break: break-all;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form-group {
+  margin: .5rem 0;
+  display: flex;
+  flex-direction: column;
+    align-items: center;
+}
+
+.result {
+  background-color: #DDD;
+  display: block;
+  font-family: "Menlo";
+  font-size: 1.4rem;
+  text-align: center;
+}
+
+.btn {
+  color: #EEE;
+  font-size: 1rem;
+  height: 2rem;
+  width: 6rem;
+}
+
+.btn:hover {
+  cursor: pointer;
+}
+
+.btn--encode { background-color: #00B27D; }
+.btn--decode { background-color: #3263e4; }
