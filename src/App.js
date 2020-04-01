@@ -5,7 +5,7 @@ import './App.css';
 
 const SECRET_KEY = "n2r3fn92rx92839x2398xe";
 
-const ENCODE_SECONDS = 10;
+const ENCODE_SECONDS = 0;
 const DECODE_SECONDS = 60;
 
 class App extends Component {
