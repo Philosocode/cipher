@@ -6,7 +6,7 @@ import './App.css';
 const SECRET_KEY = "n2r3fn92rx92839x2398xe";
 
 const ENCODE_SECONDS = 0;
-const DECODE_SECONDS = 60;
+const DECODE_SECONDS = 300;
 
 class App extends Component {
   state = {
