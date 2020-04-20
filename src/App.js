@@ -6,26 +6,50 @@ import './App.css';
 const SECRET_KEY = "n2r3fn92rx92839x2398xe";
 
 const ENCODE_SECONDS = 0;
-const DECODE_SECONDS = 300;
+const DECODE_SECONDS = 5;
 
 class App extends Component {
   state = {
     content: "",
     result: "",
-    secondsRemaining: ENCODE_SECONDS,
-    timerRunning: false,
+    currentTime: undefined,
+    endTime: undefined,
+    timerRunning: true,
+    isEncoding: false
   }
-
+  
+  /* Lifecycle */
   componentWillUnmount() {
     this.stopTimer();
   }
 
-  startTimer(seconds) {
-    this.stopTimer();
+  /* Methods */
+  generateResult = () => {
+    const {content, isEncoding} = this.state;
+    if (!content) return;
 
+    const result = isEncoding
+      ? this.encode(content)
+      : this.decode(content);
+
+    this.setState({ result });
+  }
+
+  decode = (content) => {
+    return Cipher.decode(SECRET_KEY, content);
+  }
+
+  encode = (content) => {
+    return Cipher.encode(SECRET_KEY, content);
+  }
+
+  startTimer = (seconds, shouldEncode) => {
     this.interval = setInterval(() => this.tick(), 1000);
 
-    this.setState({ timerRunning: true, secondsRemaining: seconds });
+    const currentTime = new Date();
+    const endTime = new Date(currentTime.getTime() + (seconds * 1000));
+
+    this.setState({ timerRunning: true, isEncoding: shouldEncode, currentTime, endTime });
   }
 
   stopTimer() {
@@ -33,19 +57,23 @@ class App extends Component {
     this.setState({ timerRunning: false });
   }
 
-  generateContent = (evt, shouldEncode) => {
-    const {content} = this.state;
-    if (!content) return;
+  tick = () => {
+    if (!this.state.timerRunning) return;
 
-    const result = shouldEncode 
-      ? Cipher.encode(SECRET_KEY, content)
-      : Cipher.decode(SECRET_KEY, content);
+    if (this.getSecondsRemaining() <= 0) {
+      this.stopTimer();
+      this.generateResult();
+    } else {
+      this.setState({ currentTime: new Date() });
+    }
+  }
 
-    this.setState({ result });
+  getSecondsRemaining = () => {
+    const currentTime = new Date();
+    const { endTime } = this.state;
+    const secondsRemaining = Math.round((endTime.getTime() - currentTime.getTime()) / 1000);
 
-    shouldEncode
-      ? this.startTimer(ENCODE_SECONDS)
-      : this.startTimer(DECODE_SECONDS);
+    return secondsRemaining;
   }
 
   handleChange = (evt) => {
@@ -54,22 +82,14 @@ class App extends Component {
     this.setState({ [name]: value });
   }
 
-  tick = () => {
-    const { timerRunning, secondsRemaining } = this.state;
-
-    if (!timerRunning) return;
-    if (secondsRemaining <= 1)
-      this.stopTimer();
-
-    this.setState(state => ({
-      secondsRemaining: state.secondsRemaining - 1
-    }))
-  }
-
   displayResult = () => {
-    const { timerRunning, secondsRemaining, result } = this.state;
+    // Timer not started
+    if (!this.state.endTime) return;
 
-    if (timerRunning) 
+    const secondsRemaining = this.getSecondsRemaining();
+    const { timerRunning, result } = this.state;
+
+    if (timerRunning)
       return <p className="countdown">{ secondsRemaining }</p>
     else if (secondsRemaining <= 0)
       return (
@@ -99,10 +119,10 @@ class App extends Component {
         />
   
         <div className="btn__container">
-          <button className="btn btn--encode" onClick={(evt) => this.generateContent(evt, true)}>
+          <button className="btn btn--encode" onClick={() => this.startTimer(ENCODE_SECONDS, true)}>
             Encode
           </button>
-          <button className="btn btn--decode" onClick={(evt) => this.generateContent(evt, false)}>
+          <button className="btn btn--decode" onClick={() => this.startTimer(DECODE_SECONDS, false)}>
             Decode
           </button>
         </div>
