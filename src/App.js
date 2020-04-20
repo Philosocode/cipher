@@ -4,7 +4,7 @@ import Cipher from "./XORCipher";
 import './App.css';
 
 const SECRET_KEY = "n2r3fn92rx92839x2398xe";
-const DECODE_SECONDS = 5;
+const DECODE_SECONDS = 300;
 
 class App extends Component {
   state = {
